@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر العسل الطبيعي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="honeycomb.png" type="image/png">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .cart-icon {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: white;
+            color: #f6a623;
+            padding: 15px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .cart-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .cart-count {
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 40px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .product-desc {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .product-price {
+            font-size: 1.5em;
+            color: #f6a623;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quantity-btn {
+            background: #ecf0f1;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background 0.3s;
+        }
+
+        .quantity-btn:hover {
+            background: #bdc3c7;
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 1em;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 800px;
+            margin: 50px auto;
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #2c3e50;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            border-bottom: 1px solid #ecf0f1;
+            align-items: center;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            color: #f6a623;
+            font-weight: 600;
+        }
+
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: background 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #ff3838;
+        }
+
+        .cart-total {
+            font-size: 1.8em;
+            font-weight: 700;
+            text-align: center;
+            padding: 30px;
+            color: #f6a623;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: transform 0.3s;
+        }
+
+        .checkout-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: 'Cairo', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #f6a623;
+        }
+
+        .order-summary {
+            background: #fff9e6;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #f6d365;
+        }
+
+        .order-summary h3 {
+            color: #f6a623;
+            margin-bottom: 15px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10ac84 0%, #00b894 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: transform 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .whatsapp-btn {
+            width: 100%;
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            margin-top: 10px;
+            transition: transform 0.3s;
+        }
+
+        .whatsapp-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-icon {
+            font-size: 5em;
+            color: #10ac84;
+            margin-bottom: 20px;
+        }
+
+        .success-message h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .order-details-box {
+            background: #f8f9fa;
+            border: 2px solid #10ac84;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: right;
+        }
+
+        .order-details-box h3 {
+            color: #10ac84;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .detail-value {
+            color: #7f8c8d;
+        }
+
+        .products-list {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .product-line {
+            padding: 8px 0;
+            color: #2c3e50;
+        }
+
+        .download-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            margin-top: 20px;
+            transition: transform 0.3s;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px;
+            color: #7f8c8d;
+        }
+
+        .captcha-container {
+            background: #fff9e6;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid #f6d365;
+        }
+
+        .captcha-question {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .captcha-input {
+            width: 150px;
+            padding: 10px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 1.1em;
+            text-align: center;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .cart-icon {
+                position: static;
+                display: inline-block;
+                margin-top: 15px;
+            }
+
+            .modal-content {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="cart-icon" onclick="openCart()">
+                <span class="cart-count" id="cartCount">0</span>
+                🛒 السلة
+            </div>
+            <h1>🍯 متجر العسل الطبيعي</h1>
+            <p>أجود أنواع العسل الطبيعي 100%</p>
+        </header>
+
+        <div class="products-grid" id="productsGrid"></div>
+    </div>
+
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCart()">×</span>
+            <h2 style="text-align: center; color: #f6a623; margin-bottom: 30px;">🛒 سلة التسوق</h2>
+            <div id="cartItems"></div>
+            <div id="checkoutSection"></div>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            {
+                id: 1,
+                name: 'عسل السدر الجبلي',
+                description: 'عسل السدر الأصلي من الجبال، غني بالفوائد الصحية والمعادن',
+                price: 3500,
+                image: 'product1.jpg'
+            },
+            {
+                id: 2,
+                name: 'عسل الزهور البرية',
+                description: 'عسل طبيعي من رحيق الزهور البرية المتنوعة',
+                price: 2000,
+                image: 'product1.jpg'
+            },
+            {
+                id: 3,
+                name: 'عسل الأكاسيا',
+                description: 'عسل نقي بطعم خفيف ولون ذهبي فاتح من زهور الأكاسيا',
+                price: 2800,
+                image: 'product1.jpg'
+            },
+            {
+                id: 4,
+                name: 'عسل الحمضيات',
+                description: 'عسل طبيعي من أزهار البرتقال والليمون برائحة عطرة',
+                price: 2200,
+                image: 'product1.jpg'
+            },
+            {
+                id: 5,
+                name: 'عسل الكينا',
+                description: 'عسل نقي من شجر الأوكالبتوس بفوائد علاجية مميزة',
+                price: 2500,
+                image: 'product1.jpg'
+            },
+            {
+                id: 6,
+                name: 'عسل الخزامى',
+                description: 'عسل فاخر من زهور الخزامى برائحة مميزة وطعم رائع',
+                price: 3200,
+                image: 'product1.jpg'
+            },
+            {
+                id: 7,
+                name: 'عسل الغابة السوداء',
+                description: 'عسل داكن غني بمضادات الأكسدة من أشجار الغابات',
+                price: 3000,
+                image: 'product1.jpg'
+            },
+            {
+                id: 8,
+                name: 'عسل الزعتر البري',
+                description: 'عسل طبيعي من الزعتر البري بخصائص علاجية قوية',
+                price: 2700,
+                image: 'product1.jpg'
+            }
+        ];
+
+        let cart = [];
+        let captchaAnswer = 0;
+        let currentOrderData = null;
+
+        function generateCaptcha() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            captchaAnswer = num1 + num2;
+            return `${num1} + ${num2} = ؟`;
+        }
+
+        function displayProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-desc">${product.description}</div>
+                        <div class="product-price">${product.price} دج</div>
+                        <div class="quantity-control">
+                            <button class="quantity-btn" onclick="changeQuantity(${product.id}, -1)">-</button>
+                            <input type="number" class="quantity-input" id="qty-${product.id}" value="1" min="1" readonly>
+                            <button class="quantity-btn" onclick="changeQuantity(${product.id}, 1)">+</button>
+                        </div>
+                        <button class="add-to-cart-btn" onclick="addToCart(${product.id})">
+                            إضافة إلى السلة 🍯
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function changeQuantity(productId, change) {
+            const input = document.getElementById(`qty-${productId}`);
+            let value = parseInt(input.value) + change;
+            if (value < 1) value = 1;
+            input.value = value;
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const quantity = parseInt(document.getElementById(`qty-${productId}`).value);
+            
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({ ...product, quantity });
+            }
+            
+            updateCartCount();
+            document.getElementById(`qty-${productId}`).value = 1;
+            
+            const btn = event.target;
+            btn.textContent = '✓ تمت الإضافة';
+            setTimeout(() => {
+                btn.innerHTML = 'إضافة إلى السلة 🍯';
+            }, 1000);
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        function openCart() {
+            displayCart();
+            document.getElementById('cartModal').style.display = 'block';
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        function displayCart() {
+            const cartItems = document.getElementById('cartItems');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div class="empty-cart"><h3>السلة فارغة</h3><p>لم تقم بإضافة أي منتجات بعد</p></div>';
+                document.getElementById('checkoutSection').innerHTML = '';
+                return;
+            }
+
+            cartItems.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">${item.price} دج × ${item.quantity}</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="quantity-btn" onclick="updateCartQuantity(${item.id}, -1)">-</button>
+                        <input type="number" class="quantity-input" value="${item.quantity}" readonly>
+                        <button class="quantity-btn" onclick="updateCartQuantity(${item.id}, 1)">+</button>
+                    </div>
+                    <button class="remove-btn" onclick="removeFromCart(${item.id})">حذف</button>
+                </div>
+            `).join('');
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            document.getElementById('checkoutSection').innerHTML = `
+                <div class="cart-total">المجموع الكلي: ${total} دج</div>
+                <button class="checkout-btn" onclick="showCheckoutForm()">إتمام الطلب 📦</button>
+            `;
+        }
+
+        function updateCartQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity < 1) item.quantity = 1;
+                updateCartCount();
+                displayCart();
+            }
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartCount();
+            displayCart();
+        }
+
+        function showCheckoutForm() {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const orderSummary = cart.map(item => 
+                `${item.name} × ${item.quantity} = ${item.price * item.quantity} دج`
+            ).join('\n');
+
+            const captchaQuestion = generateCaptcha();
+
+            document.getElementById('cartItems').innerHTML = `
+                <form id="orderForm" onsubmit="submitOrder(event)">
+                    <h2 style="text-align: center; color: #f6a623; margin-bottom: 30px;">📝 نموذج الطلب</h2>
+                    
+                    <div class="order-summary">
+                        <h3>🍯 ملخص الطلب:</h3>
+                        <pre style="white-space: pre-wrap; font-family: 'Cairo', sans-serif;">${orderSummary}</pre>
+                        <strong style="color: #f6a623; font-size: 1.2em;">المجموع الكلي: ${total} دج</strong>
+                    </div>
+
+                    <div class="form-group">
+                        <label>الاسم *</label>
+                        <input type="text" name="firstName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>اللقب *</label>
+                        <input type="text" name="lastName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>رقم الهاتف *</label>
+                        <input type="tel" name="phone" required pattern="[0-9]{10}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>العنوان الكامل *</label>
+                        <textarea name="address" rows="3" required></textarea>
+                    </div>
+
+                    <div class="captcha-container">
+                        <div class="captcha-question">🔒 ${captchaQuestion}</div>
+                        <input type="number" class="captcha-input" id="captchaInput" required placeholder="الإجابة">
+                    </div>
+
+                    <button type="submit" class="submit-btn">إرسال الطلب 📨</button>
+                    <button type="button" class="whatsapp-btn" onclick="shareOnWhatsApp()">
+                        مشاركة عبر واتساب 💬
+                    </button>
+                </form>
+            `;
+            
+            document.getElementById('checkoutSection').innerHTML = '';
+        }
+
+        function submitOrder(event) {
+            event.preventDefault();
+            
+            const captchaInput = parseInt(document.getElementById('captchaInput').value);
+            if (captchaInput !== captchaAnswer) {
+                alert('❌ الإجابة على السؤال غير صحيحة. حاول مرة أخرى.');
+                return;
+            }
+
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const orderDetails = cart.map(item => 
+                `${item.name} (${item.quantity})`
+            ).join(', ');
+
+            currentOrderData = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                fullName: formData.get('firstName') + ' ' + formData.get('lastName'),
+                phone: formData.get('phone'),
+                address: formData.get('address'),
+                orderDetails: orderDetails,
+                products: cart.map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price,
+                    subtotal: item.price * item.quantity
+                })),
+                total: total,
+                date: new Date().toLocaleString('ar-DZ', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+
+            // رابط Google Apps Script
+            const scriptURL = 'https://script.google.com/macros/s/AKfycby6WkL1qMUpW4rWCLR4p5_vP6gJl16F1DzgfdLnflvO0hLR7Thn2xFlDpTZOQJANm6p/exec';
+            
+            // إظهار رسالة التحميل
+            const submitBtn = event.target.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'جاري الإرسال... ⏳';
+            submitBtn.disabled = true;
+            
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(currentOrderData)
+            })
+            .then(() => {
+                showSuccessMessage();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showSuccessMessage();
+            });
+        }
+
+        function showSuccessMessage() {
+            const productsHtml = currentOrderData.products.map(p => 
+                `<div class="product-line">• ${p.name} × ${p.quantity} = ${p.subtotal} دج</div>`
+            ).join('');
+
+            document.getElementById('cartItems').innerHTML = `
+                <div class="success-message">
+                    <div class="success-icon">✅</div>
+                    <h2>تم إتمام الطلب بنجاح!</h2>
+                    <p style="color: #7f8c8d; font-size: 1.1em; margin-top: 15px;">
+                        شكراً لك على طلبك من متجر العسل الطبيعي
+                    </p>
+
+                    <div class="order-details-box">
+                        <h3>📋 تفاصيل الطلب</h3>
+                        
+                        <div class="detail-row">
+                            <span class="detail-label">رقم الطلب:</span>
+                            <span class="detail-value">#${Math.floor(Math.random() * 10000) + 1000}</span>
+                        </div>
+
+                        <div class="detail-row">
+                            <span class="detail-label">التاريخ:</span>
+                            <span class="detail-value">${currentOrderData.date}</span>
+                        </div>
+
+                        <div class="detail-row">
+                            <span class="detail-label">الاسم الكامل:</span>
+                            <span class="detail-value">${currentOrderData.fullName}</span>
+                        </div>
+
+                        <div class="detail-row">
+                            <span class="detail-label">رقم الهاتف:</span>
+                            <span class="detail-value">${currentOrderData.phone}</span>
+                        </div>
+
+                        <div class="detail-row">
+                            <span class="detail-label">العنوان:</span>
+                            <span class="detail-value">${currentOrderData.address}</span>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <div class="detail-label" style="margin-bottom: 10px;">🍯 المنتجات المطلوبة:</div>
+                            <div class="products-list">
+                                ${productsHtml}
+                            </div>
+                        </div>
+
+                        <div class="detail-row" style="border: none; margin-top: 20px; font-size: 1.3em;">
+                            <span class="detail-label" style="color: #f6a623;">المجموع الإجمالي:</span>
+                            <span class="detail-value" style="color: #f6a623; font-weight: 700;">${currentOrderData.total} دج</span>
+                        </div>
+                    </div>
+
+                    <button class="download-btn" onclick="downloadOrderDetails()">
+                        📥 تحميل تفاصيل الطلب
+                    </button>
+
+                    <button class="checkout-btn" onclick="closeCart(); cart = []; updateCartCount(); displayProducts(); currentOrderData = null;" style="margin-top: 20px;">
+                        العودة للمتجر 🏠
+                    </button>
+                </div>
+            `;
+            document.getElementById('checkoutSection').innerHTML = '';
+        }
+
+        function downloadOrderDetails() {
+            if (!currentOrderData) return;
+
+            const productsText = currentOrderData.products.map(p => 
+                `${p.name} × ${p.quantity} = ${p.subtotal} دج`
+            ).join('\n');
+
+            const content = `
+╔════════════════════════════════════════╗
+║     متجر العسل الطبيعي - تفاصيل الطلب     ║
+╚════════════════════════════════════════╝
+
+رقم الطلب: #${Math.floor(Math.random() * 10000) + 1000}
+التاريخ: ${currentOrderData.date}
+
+════════════════════════════════════════
+
+معلومات العميل:
+──────────────────────────────────────
+الاسم الكامل: ${currentOrderData.fullName}
+رقم الهاتف: ${currentOrderData.phone}
+العنوان: ${currentOrderData.address}
+
+════════════════════════════════════════
+
+المنتجات المطلوبة:
+──────────────────────────────────────
+${productsText}
+
+════════════════════════════════════════
+
+المجموع الإجمالي: ${currentOrderData.total} دج
+
+════════════════════════════════════════
+
+شكراً لتسوقكم معنا! 🍯
+نتمنى لكم تجربة ممتعة مع منتجاتنا الطبيعية
+            `;
+
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `طلب-العسل-${new Date().getTime()}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function shareOnWhatsApp() {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const orderDetails = cart.map(item => 
+                `${item.name} × ${item.quantity} = ${item.price * item.quantity} دج`
+            ).join('\n');
+            
+            const message = `🍯 طلب جديد من متجر العسل الطبيعي\n\n${orderDetails}\n\n💰 المجموع: ${total} دج`;
+            const whatsappURL = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappURL, '_blank');
+        }
+
+        displayProducts();
+    </script>
+</body>
+</html>
